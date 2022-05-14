@@ -36,8 +36,12 @@
 
           iPython = pkgs.kernels.iPythonWith {
 
-            name = "Python-env";
-            packages = p: with p; [ markdown sympy numpy ];
+            name = "default-python-env";
+            packages = pkgs: with pkgs; [
+              markdown
+              sympy
+              numpy
+            ];
             ignoreCollisions = true;
 
           };
@@ -45,6 +49,15 @@
           jupyterEnvironment = pkgs.jupyterlabWith {
 
             kernels = [ iPython ];
+            extraPackages = pkgs : with pkgs; [
+              python39Packages.jupytext
+              curl
+              pandoc
+              tree
+              zsh
+            ];
+            extraJupyterPath = pkgs:
+              "${pkgs.python39Packages.jupytext}/lib/python3.9/site-packages";
 
           };
 
