@@ -48,7 +48,32 @@
 
           };
 
-          buildImage = pkgs.mkDockerImage {
+          mkDockerImage = { name ? "jupyterwith", jupyterlab }:
+          pkgs.dockerTools.buildLayeredImage {
+            inherit name;
+            tag = "latest";
+            created = "now";
+            maxLayers = 120;
+            contents = [ jupyterlab pkgs.glibcLocales ];
+            config = {
+              Env = [
+                "LOCALE_ARCHIVE=${pkgs.glibcLocales}/lib/locale/locale-archive"
+                "LANG=en_US.UTF-8"
+                "LANGUAGE=en_US:en"
+                "LC_ALL=en_US.UTF-8"
+              ];
+              CMD = [ "/bin/jupyter-lab" "--ip=0.0.0.0" "--port=8080" "--no-browser" "--allow-root" ];
+              WorkingDir = "/data";
+              ExposedPorts = {
+                "8080" = {};
+              };
+              Volumes = {
+                "/data" = {};
+              };
+            };
+          };
+
+          buildImage = mkDockerImage {
 
             name = "template-nix-notebooks";
             jupyterlab = jupyterEnvironment;
