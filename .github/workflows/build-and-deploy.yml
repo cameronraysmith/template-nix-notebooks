@@ -13,10 +13,10 @@ jobs:
       - uses: cachix/install-nix-action@v17
         with:
           nix_path: nixpkgs=channel:nixos-unstable
-      # - uses: cachix/cachix-action@v10
-      #   with:
-      #     name: cameronraysmith
-      #     authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
+      - uses: cachix/cachix-action@v10
+        with:
+          name: cameronraysmith
+          authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
       - run: nix-build -A checks.x86_64-linux
       - run: |
           scripts/push_image.sh
