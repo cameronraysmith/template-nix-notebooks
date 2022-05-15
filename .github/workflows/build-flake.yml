@@ -1,8 +1,9 @@
 ---
-name: "Build and deploy site"
+name: "Build nix flake"
 on:  # yamllint disable-line rule:truthy
   pull_request:
   push:
+  workflow_dispatch:  # allows manual triggering
 jobs:
   tests:
     runs-on: ubuntu-latest
