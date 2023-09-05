@@ -4,14 +4,28 @@ on:  # yamllint disable-line rule:truthy
   workflow_dispatch:  # allows manual triggering
   schedule:
     - cron: '0 0 1 * *'  # runs monthly at 00:00
-
+permissions:
+  pull-requests: write
+  contents: write
 jobs:
   lockfile:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: cachix/install-nix-action@v23
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Install Nix
+        uses: cachix/install-nix-action@v23
         with:
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
           extra_nix_config: |
             access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
-      - uses: DeterminateSystems/update-flake-lock@v20
+      - name: Update flake.lock
+        uses: DeterminateSystems/update-flake-lock@v20
+        with:
+          pr-body: |
+            automated changes by DeterminateSystems/update-flake-lock
+            ```
+            {{ env.GIT_COMMIT_MESSAGE }}
+            ```
+          pr-labels: |                  # Labels to be set on the PR
+            dependencies
